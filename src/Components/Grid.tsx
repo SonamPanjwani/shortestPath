@@ -3,41 +3,31 @@ import { useAppSelector } from "../reduxStore/store";
 import GridBox from "./GridBox";
 import { useDispatch } from "react-redux";
 import { EndGrid, startGrid } from "../reduxStore/gridSlice";
-import { SpotType } from "../utils/types";
-import { GridType } from "../utils/types";
-
+import { SpotType, GridType } from "../utils/types";
 import aStar from "../AStarAlgorithm/aStar";
 
 function Grid() {
   const row = useAppSelector((state) => state.grid.row);
   const col = useAppSelector((state) => state.grid.col);
   const display = useAppSelector((state) => state.display);
-  //console.log(display);
-  //console.log(runState);
   const dispatch = useDispatch();
   const [grids, setGrids] = useState<GridType>([]);
   const [start, setStart] = useState<{ row: number; col: number } | null>(null);
   const [end, setEnd] = useState<{ row: number; col: number } | null>(null);
-  const [runAlgo, setrunAlgo] = useState<boolean>(true);
 
   useEffect(() => {
     const grid = initializeGrid();
     setGrids(grid);
   }, [row, col]);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (start && end) {
-      console.log("inside 2nd if");
       const startPoint = grids[start.row]?.[start.col];
-      const EndPoint = grids[end.row]?.[end.col];
-      console.log(startPoint);
-      console.log(EndPoint);
-      if (startPoint && EndPoint) {
-        const path = aStar(startPoint, EndPoint);
+      const endPoint = grids[end.row]?.[end.col];
+      if (startPoint && endPoint) {
+        const path = await aStar(startPoint, endPoint);
         if (path.length > 0) {
-          console.log(path);
-          // Visualize the path
-          setrunAlgo(false);
+          console.log("Path:", path);
         } else {
           console.log("No path found");
         }
@@ -51,17 +41,14 @@ function Grid() {
 
   const initializeGrid = (): GridType => {
     const grid: GridType = new Array(row);
-
     for (let i = 0; i < row; i++) {
       grid[i] = new Array(col).fill(null);
     }
     createSpot(grid);
-
     addNeighbour(grid);
-    handleClick();
-
     return grid;
   };
+
   const createSpot = (grid: GridType) => {
     for (let i = 0; i < row; i++) {
       for (let j = 0; j < col; j++) {
@@ -70,7 +57,6 @@ function Grid() {
     }
   };
 
-  //Spot constructor
   function Spot(i: number, j: number, row: number, col: number): SpotType {
     return {
       x: i,
@@ -83,21 +69,17 @@ function Grid() {
       neighbours: [],
       previous: undefined,
       parent: null,
-      //Add Neighbours
       addneighbours: function (grid: GridType) {
-        if (start && end) {
-          let i = this.x;
-          let j = this.y;
-          if (i > 0) this.neighbours.push(grid[i - 1][j]);
-          if (i < row - 1) this.neighbours.push(grid[i + 1][j]);
-          if (j > 0) this.neighbours.push(grid[i][j - 1]);
-          if (j < col - 1) this.neighbours.push(grid[i][j + 1]);
-        }
+        let i = this.x;
+        let j = this.y;
+        if (i > 0) this.neighbours.push(grid[i - 1][j]);
+        if (i < row - 1) this.neighbours.push(grid[i + 1][j]);
+        if (j > 0) this.neighbours.push(grid[i][j - 1]);
+        if (j < col - 1) this.neighbours.push(grid[i][j + 1]);
       },
     };
   }
 
-  //Add Neighbour function from Spot function
   const addNeighbour = (grid: GridType) => {
     for (let i = 0; i < row; i++) {
       for (let j = 0; j < col; j++) {
@@ -107,6 +89,7 @@ function Grid() {
       }
     }
   };
+
   const handleGridBoxClick = (row: number, col: number) => {
     if (!start) {
       setStart({ row, col });
@@ -122,37 +105,32 @@ function Grid() {
       dispatch(EndGrid({ row: -1, col: -1 }));
     }
   };
-  //console.log(grids);
-  //GridBoxes with values
+
   const gridWithValues = (
     <div>
-      {grids.map((row, rowIndex) => {
-        return (
-          <div key={rowIndex} className="flex">
-            {row.map((col, colIndex) => {
-              return (
-                <GridBox
-                  key={colIndex}
-                  row={rowIndex}
-                  col={colIndex}
-                  isStart={start?.row === rowIndex && start?.col === colIndex}
-                  isEnd={end?.row === rowIndex && end?.col === colIndex}
-                  onClick={() => handleGridBoxClick(rowIndex, colIndex)}
-                />
-              );
-            })}
-          </div>
-        );
-      })}
+      {grids.map((row, rowIndex) => (
+        <div key={rowIndex} className="flex">
+          {row.map((col, colIndex) => (
+            <GridBox
+              key={colIndex}
+              row={rowIndex}
+              col={colIndex}
+              isStart={start?.row === rowIndex && start?.col === colIndex}
+              isEnd={end?.row === rowIndex && end?.col === colIndex}
+              onClick={() => handleGridBoxClick(rowIndex, colIndex)}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 
   return (
     <div>
       {!display.display && (
-        <div className=" flex flex-col items-start ">
+        <div className="flex flex-col items-start">
           <button
-            className="m-4  text-center rounded-lg bg-gray-800 p-2 text-stone-300 text-lg font-semibold "
+            className="m-4 text-center rounded-lg bg-gray-800 p-2 text-stone-300 text-lg font-semibold"
             onClick={handleClick}
           >
             Visualise
@@ -163,4 +141,5 @@ function Grid() {
     </div>
   );
 }
+
 export default Grid;

@@ -4,6 +4,7 @@ import Header from "./Components/Header";
 import Sidebar from "./Components/Sidebar";
 import Infobox from "./Components/Infobox";
 import Grid from "./Components/Grid";
+//import GridOne from "./Components/GridOne";
 
 function App() {
   return (
