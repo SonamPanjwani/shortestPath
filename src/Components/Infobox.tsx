@@ -14,7 +14,7 @@ function Infobox() {
   }, [display]);
 
   const handleClick = () => {
-    //console.log(disp);
+    console.log(disp);
     dispatch(displayInfo(false));
   };
 
