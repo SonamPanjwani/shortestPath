@@ -44,6 +44,10 @@ function Infobox() {
                 Green Grid represents the Start and Red grid represents the End.
               </li>
               <li>
+                To Set the blockage path manually right click on the grid cell.
+              </li>
+              <li>To make random blockages click on the Set Random Blockage</li>
+              <li>
                 Click on the Run button to find the shortest path between the
                 two points.
               </li>

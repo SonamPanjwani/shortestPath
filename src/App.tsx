@@ -1,10 +1,13 @@
+// App.tsx
 import React from "react";
 import "./App.css";
 import Header from "./Components/Header";
 import Sidebar from "./Components/Sidebar";
 import Infobox from "./Components/Infobox";
 import Grid from "./Components/Grid";
-//import GridOne from "./Components/GridOne";
+// import { GridType, SpotType } from "./utils/types";
+// import PathFinding from "./Components/PathFinding";
+// import Pathfinding from "./Components/PathFinding";
 
 function App() {
   return (
@@ -13,7 +16,7 @@ function App() {
         <Header />
         <div className="flex gap-10">
           <Sidebar />
-          <span className="mt-10">
+          <span className="mt-10 flex-grow">
             <Infobox />
             <Grid />
           </span>

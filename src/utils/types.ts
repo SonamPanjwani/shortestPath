@@ -22,6 +22,7 @@ export type GridBoxType = {
   isVisited: boolean;
   isBlocked: boolean;
   onClick: () => void;
+  onContextMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 };
 // types definition for slice
 export type gridType = {

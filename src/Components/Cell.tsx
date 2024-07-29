@@ -9,6 +9,7 @@ const GridBox: React.FC<GridBoxType> = ({
   isVisited,
   isBlocked,
   onClick,
+  onContextMenu,
 }) => {
   const getBackgroundColor = () => {
     if (isStart) return "bg-green-800";
@@ -25,6 +26,7 @@ const GridBox: React.FC<GridBoxType> = ({
         className={`w-5 h-5 sm:w-7 sm:h-7 border-2 border-black ${getBackgroundColor()} transition duration-300 ease-in-out`}
         id={`node-${row + 1}-${col + 1}`}
         onClick={onClick}
+        onContextMenu={onContextMenu}
       ></div>
     </>
   );

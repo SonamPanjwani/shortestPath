@@ -1,13 +1,9 @@
-import { GridType, SpotType } from "../utils/types";
+import { SpotType } from "../utils/types";
 type AStarResult = {
   path: SpotType[];
   visited: SpotType[];
 };
-function aStar(
-  startPoint: SpotType,
-  endPoint: SpotType,
-  grid: GridType
-): AStarResult {
+function aStar(startPoint: SpotType, endPoint: SpotType): AStarResult {
   console.log("A* algorithm activated");
 
   let openSet: SpotType[] = [];

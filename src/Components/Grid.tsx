@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../reduxStore/store";
-import GridBox from "./GridBox";
+import GridBox from "./Cell";
 import { useDispatch } from "react-redux";
 import { EndGrid, startGrid } from "../reduxStore/gridSlice";
 import { SpotType, GridType } from "../utils/types";
-import aStar from "../AStarAlgorithm/aStar";
+
+import PathFinding from "./PathFinding";
 
 function Grid() {
   const row = useAppSelector((state) => state.grid.row);
@@ -17,38 +18,11 @@ function Grid() {
   const [pathState, setPath] = useState<SpotType[]>([]);
   const [visitedCell, setVisited] = useState<SpotType[]>([]);
   const [block, setBlock] = useState<boolean>(false);
+
   useEffect(() => {
     const grid = initializeGrid();
     setGrids(grid);
   }, [row, col]);
-  useEffect(() => {
-    console.log("path", pathState);
-    console.log("visited", visitedCell);
-  }, [pathState, visitedCell]);
-
-  const handleClick = async () => {
-    console.log("before the A Call", grids);
-
-    if (start && end) {
-      const startPoint = grids[start.row]?.[start.col];
-      const endPoint = grids[end.row]?.[end.col];
-
-      if (startPoint && endPoint) {
-        const result = await aStar(startPoint, endPoint, grids);
-        if (result.path.length > 0) {
-          console.log("Path:", result.path);
-          setPath(result.path);
-          setVisited(result.visited);
-        } else {
-          console.log("No path found");
-        }
-      } else {
-        console.error("Start or End point is undefined");
-      }
-    } else {
-      console.error("Start or End point is not set");
-    }
-  };
 
   const initializeGrid = (): GridType => {
     const grid: GridType = new Array(row);
@@ -93,11 +67,11 @@ function Grid() {
     };
   }
 
-  const addNeighbour = (grid: GridType) => {
+  const addNeighbour = (grids: GridType) => {
     for (let i = 0; i < row; i++) {
       for (let j = 0; j < col; j++) {
-        if (grid[i][j]) {
-          grid[i][j].addneighbours(grid);
+        if (grids[i][j]) {
+          grids[i][j].addneighbours(grids);
         }
       }
     }
@@ -118,7 +92,28 @@ function Grid() {
       dispatch(EndGrid({ row: -1, col: -1 }));
     }
   };
-
+  const handleSetBlockages = () => {
+    const updatedGrid = [...grids];
+    for (let i = 0; i < row; i++) {
+      for (let j = 0; j < col; j++) {
+        if (Math.random() < 0.2) {
+          updatedGrid[i][j].isBlocked = true;
+        }
+      }
+    }
+    setGrids(updatedGrid);
+    setBlock(true);
+  };
+  const handleRightClick = (
+    event: React.MouseEvent,
+    row: number,
+    col: number
+  ) => {
+    event.preventDefault();
+    const newGrids = [...grids];
+    newGrids[row][col].isBlocked = !newGrids[row][col].isBlocked;
+    setGrids(newGrids);
+  };
   const gridWithValues = (
     <div>
       {grids.map((row, rowIndex) => (
@@ -138,6 +133,9 @@ function Grid() {
               )}
               isBlocked={grids[rowIndex][colIndex]?.isBlocked || false}
               onClick={() => handleGridBoxClick(rowIndex, colIndex)}
+              onContextMenu={(event: React.MouseEvent) =>
+                handleRightClick(event, rowIndex, colIndex)
+              }
             />
           ))}
         </div>
@@ -157,57 +155,51 @@ function Grid() {
     const grid = initializeGrid();
     setGrids(grid);
   };
-  const setRandomBlockedCells = (grid: GridType): GridType => {
-    const blockedPercentage = 0.2; // Block 20% of cells
-    setBlock(true);
-    const updatedGrid = grid.map((rowArray, i) =>
-      rowArray.map((cell, j) => {
-        // Check if the cell is the start or end cell
-        const isStart = start && start.row === i && start.col === j;
-        const isEnd = end && end.row === i && end.col === j;
-
-        // Only block the cell if it's not the start or end cell
-        if (!isStart && !isEnd && Math.random() < blockedPercentage) {
-          return { ...cell, isBlocked: true };
-        }
-        return cell; // Return the cell unchanged
-      })
-    );
-    console.log(updatedGrid);
-    setGrids(updatedGrid);
-    return updatedGrid;
-  };
 
   return (
     <div>
       {!display.display && (
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-center m-4 p-4 bg-gray-300 rounded-lg ">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row m-2 font-semibold text-stone-800 gap-4 ">
+              <div className="bg-green-800 p-1 rounded-lg">Start Point</div>
+              <div className="bg-red-700 p-1 rounded-lg">End Point</div>
+              <div className="bg-red-200 p-1 rounded-lg">Visited Grids</div>
+              <div className="bg-green-600 p-1 rounded-lg">Shortest Path</div>
+              <div className="bg-gray-500 p-1 rounded-lg">Blocked Grids</div>
+            </div>
+            <p className="bg-gray-800 text-stone-200 text-center rounded-lg">
+              Color Codes
+            </p>
+          </div>
           <div className="flex flex-row">
-            {" "}
+            <PathFinding
+              grid={grids}
+              start={start}
+              end={end}
+              setPath={setPath}
+              setVisited={setVisited}
+            />
             <button
-              className="m-4 text-center rounded-lg bg-gray-800 p-2 text-stone-300 text-lg font-semibold"
-              onClick={handleClick}
-            >
-              Visualise
-            </button>
-            <button
-              className="m-4  text-center rounded-lg bg-slate-300 p-2 text-gray-800 text-sm"
+              className="m-4  text-center rounded-lg bg-slate-800 p-2 text-stone-200 text-sm"
               onClick={handleRefreshBtn}
             >
               Refresh
             </button>
             {!block && (
               <button
-                className="m-4  text-center rounded-lg bg-slate-300 p-2 text-gray-800 text-sm"
-                onClick={() => {
-                  setGrids(setRandomBlockedCells(grids));
-                }}
+                className="m-4  text-center rounded-lg bg-slate-800 p-2 text-stone-200 text-sm"
+                onClick={handleSetBlockages}
               >
                 Set Random Blockages
               </button>
             )}
+            <div className="m-4  text-center rounded-lg bg-slate-800 p-2 text-stone-200 text-sm">
+              Right Click to add block Manually
+            </div>
           </div>
-          <div className="m-auto w-full">{gridWithValues}</div>
+
+          <div className="m-auto w-full max-w-4xl mt-4">{gridWithValues}</div>
         </div>
       )}
     </div>
