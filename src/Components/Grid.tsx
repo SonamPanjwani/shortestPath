@@ -169,7 +169,7 @@ function Grid() {
               <div className="bg-green-600 p-1 rounded-lg">Shortest Path</div>
               <div className="bg-gray-500 p-1 rounded-lg">Blocked Grids</div>
             </div>
-            <p className="bg-gray-800 text-stone-200 text-center rounded-lg">
+            <p className="bg-gray-800 text-stone-200 font-semibold text-center rounded-lg">
               Color Codes
             </p>
           </div>
@@ -182,20 +182,20 @@ function Grid() {
               setVisited={setVisited}
             />
             <button
-              className="m-4  text-center rounded-lg bg-slate-800 p-2 text-stone-200 text-sm"
+              className="m-4  text-center rounded-lg font-semibold  bg-slate-800 p-2 text-stone-200 text-sm"
               onClick={handleRefreshBtn}
             >
               Refresh
             </button>
             {!block && (
               <button
-                className="m-4  text-center rounded-lg bg-slate-800 p-2 text-stone-200 text-sm"
+                className="m-4  text-center rounded-lg font-semibold  bg-slate-800 p-2 text-stone-200 text-sm"
                 onClick={handleSetBlockages}
               >
                 Set Random Blockages
               </button>
             )}
-            <div className="m-4  text-center rounded-lg bg-slate-800 p-2 text-stone-200 text-sm">
+            <div className="m-4  text-center rounded-lg font-semibold  bg-slate-800 p-2 text-stone-200 text-sm">
               Right Click to add block Manually
             </div>
           </div>
