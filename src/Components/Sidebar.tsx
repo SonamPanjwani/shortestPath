@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../reduxStore/store";
 import { useDispatch } from "react-redux";
 import { displayInfo } from "../reduxStore/displaySlice";
-import { EndGrid, gridInfo, startGrid } from "../reduxStore/gridSlice";
+import { gridInfo } from "../reduxStore/gridSlice";
 import { gridType } from "../utils/types";
 
 function Sidebar() {
-  const display = useAppSelector((state) => state.display);
+  //const display = useAppSelector((state) => state.display);
   //console.log(display);
   const rowState = useAppSelector((state) => state.grid.row);
   //console.log(rowState);
@@ -58,12 +58,6 @@ function Sidebar() {
       return `${grid.row}, ${grid.col}`;
     }
     return "";
-  };
-  const handleRefreshBtn = () => {
-    dispatch(gridInfo({ row: 0, col: 0 }));
-
-    dispatch(startGrid({ row: 0, col: 0 }));
-    dispatch(EndGrid({ row: 0, col: 0 }));
   };
 
   return (
@@ -126,14 +120,6 @@ function Sidebar() {
             disabled
             value={formatGridValue(EndState)}
           />
-        </div>
-        <div>
-          <button
-            className="m-4  text-center rounded-lg bg-slate-300 p-2 text-gray-800 text-sm"
-            onClick={handleRefreshBtn}
-          >
-            Refresh
-          </button>
         </div>
       </div>
     </aside>

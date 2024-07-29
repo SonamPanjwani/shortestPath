@@ -14,20 +14,31 @@ function Grid() {
   const [grids, setGrids] = useState<GridType>([]);
   const [start, setStart] = useState<{ row: number; col: number } | null>(null);
   const [end, setEnd] = useState<{ row: number; col: number } | null>(null);
-
+  const [pathState, setPath] = useState<SpotType[]>([]);
+  const [visitedCell, setVisited] = useState<SpotType[]>([]);
+  const [block, setBlock] = useState<boolean>(false);
   useEffect(() => {
     const grid = initializeGrid();
     setGrids(grid);
   }, [row, col]);
+  useEffect(() => {
+    console.log("path", pathState);
+    console.log("visited", visitedCell);
+  }, [pathState, visitedCell]);
 
   const handleClick = async () => {
+    console.log("before the A Call", grids);
+
     if (start && end) {
       const startPoint = grids[start.row]?.[start.col];
       const endPoint = grids[end.row]?.[end.col];
+
       if (startPoint && endPoint) {
-        const path = await aStar(startPoint, endPoint);
-        if (path.length > 0) {
-          console.log("Path:", path);
+        const result = await aStar(startPoint, endPoint, grids);
+        if (result.path.length > 0) {
+          console.log("Path:", result.path);
+          setPath(result.path);
+          setVisited(result.visited);
         } else {
           console.log("No path found");
         }
@@ -46,6 +57,7 @@ function Grid() {
     }
     createSpot(grid);
     addNeighbour(grid);
+
     return grid;
   };
 
@@ -63,6 +75,7 @@ function Grid() {
       y: j,
       isStart: false,
       isEnd: false,
+      isBlocked: false,
       f: 0,
       g: 0,
       h: 0,
@@ -117,6 +130,13 @@ function Grid() {
               col={colIndex}
               isStart={start?.row === rowIndex && start?.col === colIndex}
               isEnd={end?.row === rowIndex && end?.col === colIndex}
+              isPath={pathState.some(
+                (spot) => spot.x === rowIndex && spot.y === colIndex
+              )}
+              isVisited={visitedCell.some(
+                (spot) => spot.x === rowIndex && spot.y === colIndex
+              )}
+              isBlocked={grids[rowIndex][colIndex]?.isBlocked || false}
               onClick={() => handleGridBoxClick(rowIndex, colIndex)}
             />
           ))}
@@ -125,16 +145,68 @@ function Grid() {
     </div>
   );
 
+  const handleRefreshBtn = () => {
+    setStart(null);
+    setEnd(null);
+    setPath([]);
+    setVisited([]);
+    setBlock(false);
+    //dispatch(gridInfo({ row: 0, col: 0 }));
+    dispatch(startGrid({ row: 0, col: 0 }));
+    dispatch(EndGrid({ row: 0, col: 0 }));
+    const grid = initializeGrid();
+    setGrids(grid);
+  };
+  const setRandomBlockedCells = (grid: GridType): GridType => {
+    const blockedPercentage = 0.2; // Block 20% of cells
+    setBlock(true);
+    const updatedGrid = grid.map((rowArray, i) =>
+      rowArray.map((cell, j) => {
+        // Check if the cell is the start or end cell
+        const isStart = start && start.row === i && start.col === j;
+        const isEnd = end && end.row === i && end.col === j;
+
+        // Only block the cell if it's not the start or end cell
+        if (!isStart && !isEnd && Math.random() < blockedPercentage) {
+          return { ...cell, isBlocked: true };
+        }
+        return cell; // Return the cell unchanged
+      })
+    );
+    console.log(updatedGrid);
+    setGrids(updatedGrid);
+    return updatedGrid;
+  };
+
   return (
     <div>
       {!display.display && (
         <div className="flex flex-col items-start">
-          <button
-            className="m-4 text-center rounded-lg bg-gray-800 p-2 text-stone-300 text-lg font-semibold"
-            onClick={handleClick}
-          >
-            Visualise
-          </button>
+          <div className="flex flex-row">
+            {" "}
+            <button
+              className="m-4 text-center rounded-lg bg-gray-800 p-2 text-stone-300 text-lg font-semibold"
+              onClick={handleClick}
+            >
+              Visualise
+            </button>
+            <button
+              className="m-4  text-center rounded-lg bg-slate-300 p-2 text-gray-800 text-sm"
+              onClick={handleRefreshBtn}
+            >
+              Refresh
+            </button>
+            {!block && (
+              <button
+                className="m-4  text-center rounded-lg bg-slate-300 p-2 text-gray-800 text-sm"
+                onClick={() => {
+                  setGrids(setRandomBlockedCells(grids));
+                }}
+              >
+                Set Random Blockages
+              </button>
+            )}
+          </div>
           <div className="m-auto w-full">{gridWithValues}</div>
         </div>
       )}

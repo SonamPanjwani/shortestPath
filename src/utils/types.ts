@@ -4,6 +4,7 @@ export type SpotType = {
   f: number;
   isStart: boolean;
   isEnd: boolean;
+  isBlocked: boolean;
   g: number;
   h: number;
   neighbours: SpotType[];
@@ -17,6 +18,9 @@ export type GridBoxType = {
   col: number;
   isStart: boolean;
   isEnd: boolean;
+  isPath: boolean;
+  isVisited: boolean;
+  isBlocked: boolean;
   onClick: () => void;
 };
 // types definition for slice
