@@ -4,7 +4,7 @@ type AStarResult = {
   visited: SpotType[];
 };
 function aStar(startPoint: SpotType, endPoint: SpotType): AStarResult {
-  console.log("A* algorithm activated");
+  //console.log("A* algorithm activated");
 
   let openSet: SpotType[] = [];
   let closeSet: SpotType[] = [];
@@ -29,13 +29,13 @@ function aStar(startPoint: SpotType, endPoint: SpotType): AStarResult {
         leastIndex = i;
       }
     }
-    console.log("openset ", openSet);
+    //console.log("openset ", openSet);
     let current = openSet[leastIndex];
     visited.push(current);
     // this is not giving blocked status of the cell
-    console.log(
-      `Processing cell: (${current.x}, ${current.y}), isBlocked: ${current.isBlocked}`
-    );
+    // console.log(
+    //   `Processing cell: (${current.x}, ${current.y}), isBlocked: ${current.isBlocked}`
+    // );
     // When we reach the end point
     if (current.x === endPoint.x && current.y === endPoint.y) {
       let temp = current;
