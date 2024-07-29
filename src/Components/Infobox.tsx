@@ -48,8 +48,8 @@ function Infobox() {
               </li>
               <li>To make random blockages click on the Set Random Blockage</li>
               <li>
-                Click on the Run button to find the shortest path between the
-                two points.
+                Click on the Visualise button to find the shortest path between
+                the two points.
               </li>
             </ul>
           </div>

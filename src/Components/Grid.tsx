@@ -160,8 +160,8 @@ function Grid() {
   return (
     <div>
       {!display.display && (
-        <div className="flex flex-col items-center m-4 p-4 bg-gray-300 rounded-lg ">
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col items-center  m-4 p-4 bg-gray-300 rounded-lg ">
+          <div className="flex flex-row sm:flex-col gap-2">
             <div className="flex flex-row m-2 font-semibold text-stone-800 gap-4 ">
               <div className="bg-green-800 p-1 rounded-lg">Start Point</div>
               <div className="bg-red-700 p-1 rounded-lg">End Point</div>
