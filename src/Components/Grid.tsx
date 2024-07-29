@@ -22,6 +22,7 @@ function Grid() {
   useEffect(() => {
     const grid = initializeGrid();
     setGrids(grid);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [row, col]);
 
   const initializeGrid = (): GridType => {
